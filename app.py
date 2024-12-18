@@ -836,14 +836,6 @@ def signup():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
-@app.route('/users/logout', methods=['POST'])
-def logout():
-    try:
-        # TODO
-        return jsonify({"message": "Logout successful."}), 200
-    except Exception as e:
-        return jsonify({"error": str(e)}), 500
-
 
 if __name__ == '__main__':
     app.run(host="0.0.0.0", debug=True)
