@@ -97,3 +97,9 @@ POST /users/login
 
     Recibe: JSON con username, password.
     Devuelve: Información del usuario si las credenciales son correctas.
+    
+    
+POST /users/signup
+
+    Recibe: JSON con username, password.
+    Devuelve: Información del usuario creado.

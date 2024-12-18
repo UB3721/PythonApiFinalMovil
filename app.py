@@ -801,6 +801,41 @@ def login():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
+@app.route('/users/signup', methods=['POST'])
+def signup():
+    try:
+        data = request.get_json()
+
+        username = data.get("username")
+        password = data.get("password")
+
+        if not username or not password:
+            return jsonify({"error": "Username and password are required."}), 400
+
+        check_query = "SELECT userId FROM UserApp WHERE username = %s"
+        check_params = (username,)
+        existing_users = execute_query(check_query, params=check_params, cursor_factory=RealDictCursor)
+
+        if existing_users:
+            return jsonify({"error": "Username already exists."}), 409
+
+        insert_query = """
+        INSERT INTO UserApp (username, password_)
+        VALUES (%s, %s)
+        RETURNING userId as "userId", username as "userName"
+        """
+        insert_params = (username, password)
+        new_user = execute_query(insert_query, params=insert_params, cursor_factory=RealDictCursor)
+
+        if not new_user:
+            return jsonify({"error": "Failed to create user."}), 500
+
+        user = new_user[0]
+        return jsonify(user), 201
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
 @app.route('/users/logout', methods=['POST'])
 def logout():
     try:
