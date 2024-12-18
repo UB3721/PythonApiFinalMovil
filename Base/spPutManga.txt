@@ -3,21 +3,21 @@
 -- DROP FUNCTION IF EXISTS public.update_user_manga_with_manga(integer, integer, text, text, date, text, text, text, text, numeric, text, date, boolean, numeric, text);
 
 CREATE OR REPLACE FUNCTION public.update_user_manga_with_manga(
-    user_id integer,
-    manga_id integer,
-    mangadex_id text,
-    cover_url text,
-    publication_date date,
-    syn text,
-    link_ text,
-    alt_link text,
-    user_title text,
-    current_chapter numeric,
-    reading_status text,
-    date_added date,
-    is_favorite boolean,
-    user_rating numeric,
-    notes_ text)
+	user_id integer,
+	manga_id integer,
+	mangadex_id text,
+	cover_url text,
+	publication_date date,
+	syn text,
+	link_ text,
+	alt_link text,
+	user_title text,
+	current_chapter numeric,
+	reading_status text,
+	date_added date,
+	is_favorite boolean,
+	user_rating numeric,
+	notes_ text)
     RETURNS void
     LANGUAGE 'plpgsql'
     COST 100
@@ -51,7 +51,18 @@ BEGIN
             userRating = user_rating,
             notes = notes_
         WHERE mangaId = manga_id AND userId = user_id;
+    ELSE
+        INSERT INTO UserManga (
+            userId, mangaId, link, altLink, userTitle, currentChapter,
+            readingStatus, dateAdded, isFavorite, userRating, notes
+        ) VALUES (
+            user_id, manga_id, link_, alt_link, user_title, current_chapter,
+            reading_status, date_added, is_favorite, user_rating, notes_
+        );
     END IF;
 
 END;
 $BODY$;
+
+ALTER FUNCTION public.update_user_manga_with_manga(integer, integer, text, text, date, text, text, text, text, numeric, text, date, boolean, numeric, text)
+    OWNER TO root;
