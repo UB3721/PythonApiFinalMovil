@@ -1,0 +1,84 @@
+CREATE TABLE UserApp (
+    userId SERIAL PRIMARY KEY,
+    username TEXT NOT NULL,
+    password_ TEXT NOT NULL
+);
+
+CREATE TABLE Tag (
+    tagId SERIAL PRIMARY KEY,
+    tagMangadexId TEXT,
+    tagName TEXT NOT NULL,
+    tagGroup TEXT NOT NULL
+);
+
+CREATE TABLE Manga (
+    mangaId SERIAL PRIMARY KEY,
+    mangadexId TEXT,
+    originalTitle TEXT NOT NULL,
+    coverUrl TEXT,
+    publicationDate DATE,
+    synopsis TEXT
+);
+
+CREATE TABLE MangaTag (
+    mangaId INT NOT NULL,
+    tagId INT NOT NULL,
+    PRIMARY KEY (mangaId, tagId),
+    FOREIGN KEY (mangaId) REFERENCES Manga(mangaId),
+    FOREIGN KEY (tagId) REFERENCES Tag(tagId)
+);
+
+CREATE TABLE AltTitle (
+    altTitleId SERIAL PRIMARY KEY,
+    mangaId INT NOT NULL,
+    altTitleDesc TEXT NOT NULL,
+    FOREIGN KEY (mangaId) REFERENCES Manga(mangaId)
+);
+
+CREATE TABLE UserManga (
+    userId INT NOT NULL,
+    mangaId INT NOT NULL,
+    link TEXT,
+    altLink TEXT,
+    userTitle TEXT,
+    currentChapter FLOAT,
+    readingStatus TEXT,
+    dateAdded DATE,
+    isFavorite BOOLEAN,
+    userRating FLOAT,
+    notes TEXT,
+    PRIMARY KEY (userId, mangaId),
+    FOREIGN KEY (userId) REFERENCES UserApp(userId),
+    FOREIGN KEY (mangaId) REFERENCES Manga(mangaId)
+);
+
+CREATE TABLE Collection (
+    collectionId SERIAL PRIMARY KEY,
+    userId INT NOT NULL,
+    collectionName TEXT NOT NULL,
+    dateCreated DATE NOT NULL,
+    dateLastModified DATE NOT NULL,
+    FOREIGN KEY (userId) REFERENCES UserApp(userId)
+);
+
+CREATE TABLE MangaCollection (
+    collectionId INT NOT NULL,
+    userId INT NOT NULL,
+    mangaId INT NOT NULL,
+    PRIMARY KEY (collectionId, userId, mangaId),
+    FOREIGN KEY (collectionId) REFERENCES Collection(collectionId),
+    FOREIGN KEY (userId, mangaId) REFERENCES UserManga(userId, mangaId)
+);
+
+CREATE TABLE SharedLink(
+  sharedLinkId SERIAL PRIMARY KEY,
+  senderId INT NOT NULL,
+  recipientId INT NOT NULL,
+  mangaId INT not null,
+  link_ text,
+  altLink text,
+  state_received int,
+  FOREIGN KEY (senderId) REFERENCES UserApp(userId),
+  FOREIGN KEY (recipientId) REFERENCES UserApp(userId)
+);
+

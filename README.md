@@ -1,3 +1,8 @@
+Todo lo necesario para correr la api se encuentra en este repositorio
+En ./Base se encuentra el script que crea la base, y los dos stored procedures utilizados. Se puede correr postgres y pgadmin utilizando el docker (Colocar postgres como red en la ui de pgadmin, o correr con cualquier instalación)
+
+Para correr app.py simplemente instalar los requerimientos, ya sea en conda, .env o el método utilizado. Desarrollado en python 3.10.15
+
 GET /userManga
 
     Recibe: Parámetros userId (obligatorio), mangaId (opcional).

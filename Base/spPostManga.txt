@@ -1,0 +1,52 @@
+-- FUNCTION: public.save_user_manga_with_manga(integer, integer, text, text, text, date, text, text, text, text, numeric, integer, date, boolean, numeric, text)
+
+-- DROP FUNCTION IF EXISTS public.save_user_manga_with_manga(integer, integer, text, text, text, date, text, text, text, text, numeric, integer, date, boolean, numeric, text);
+
+CREATE OR REPLACE FUNCTION public.save_user_manga_with_manga(
+	user_id integer,
+	manga_id integer,
+	mangadex_id text,
+	cover_url text,
+	publication_date date,
+	synopsis text,
+	link text,
+	alt_link text,
+	user_title text,
+	current_chapter numeric,
+	reading_status text,
+	date_added date,
+	is_favorite boolean,
+	user_rating numeric,
+	notes text)
+    RETURNS void
+    LANGUAGE 'plpgsql'
+    COST 100
+    VOLATILE PARALLEL UNSAFE
+AS $BODY$
+DECLARE
+    inserted_manga_id INT;
+BEGIN
+    IF NOT EXISTS (
+        SELECT 1 FROM Manga WHERE mangaId = manga_id
+    ) THEN
+        INSERT INTO Manga (
+            mangadexId, originaltitle, coverUrl, publicationDate, synopsis
+        )
+        VALUES (
+            mangadex_id, user_title, cover_url, publication_date, synopsis
+        )
+        RETURNING mangaId INTO inserted_manga_id;
+    ELSE
+        inserted_manga_id := manga_id;
+    END IF;
+
+    INSERT INTO UserManga (
+        userId, mangaId, link, altLink, userTitle, currentChapter,
+        readingStatus, dateAdded, isFavorite, userRating, notes
+    ) VALUES (
+        user_id, inserted_manga_id, link, alt_link, user_title, current_chapter,
+        reading_status, date_added, is_favorite, user_rating, notes
+    );
+
+END;
+$BODY$;

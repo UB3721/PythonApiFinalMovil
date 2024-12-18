@@ -1,0 +1,57 @@
+-- FUNCTION: public.update_user_manga_with_manga(integer, integer, text, text, date, text, text, text, text, numeric, text, date, boolean, numeric, text)
+
+-- DROP FUNCTION IF EXISTS public.update_user_manga_with_manga(integer, integer, text, text, date, text, text, text, text, numeric, text, date, boolean, numeric, text);
+
+CREATE OR REPLACE FUNCTION public.update_user_manga_with_manga(
+    user_id integer,
+    manga_id integer,
+    mangadex_id text,
+    cover_url text,
+    publication_date date,
+    syn text,
+    link_ text,
+    alt_link text,
+    user_title text,
+    current_chapter numeric,
+    reading_status text,
+    date_added date,
+    is_favorite boolean,
+    user_rating numeric,
+    notes_ text)
+    RETURNS void
+    LANGUAGE 'plpgsql'
+    COST 100
+    VOLATILE PARALLEL UNSAFE
+AS $BODY$
+BEGIN
+    IF EXISTS (
+        SELECT 1 FROM Manga WHERE mangaId = manga_id
+    ) THEN
+        UPDATE Manga
+        SET
+            mangadexId = mangadex_id,
+            coverUrl = cover_url,
+            publicationDate = publication_date,
+            synopsis = syn
+        WHERE mangaId = manga_id;
+    END IF;
+
+    IF EXISTS (
+        SELECT 1 FROM UserManga WHERE mangaId = manga_id AND userId = user_id
+    ) THEN
+        UPDATE UserManga
+        SET
+            link = link_,
+            altLink = alt_link,
+            userTitle = user_title,
+            currentChapter = current_chapter,
+            readingStatus = reading_status,
+            dateAdded = date_added,
+            isFavorite = is_favorite,
+            userRating = user_rating,
+            notes = notes_
+        WHERE mangaId = manga_id AND userId = user_id;
+    END IF;
+
+END;
+$BODY$;
